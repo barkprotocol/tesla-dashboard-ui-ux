@@ -16,7 +16,7 @@ A real-time Tesla dashboard with Solana blockchain integration — combining $AI
 - API logs and dynamic polling intervals
 
 ### 🔐 Solana Blockchain Integration
-- $$BARK SPL Token tracking (BTC, SOL, USDC included)
+- $BARK SPL Token tracking (BTC, SOL, USDC included)
 - Solana wallet connect (Phantom, Backpack, Solflare)
 - XP system + Anchor staking contract
 - NFT minting via **Metaplex**
