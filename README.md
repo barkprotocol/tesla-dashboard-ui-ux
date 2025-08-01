@@ -145,6 +145,27 @@ Services:
     └── analytics.ts           ← 📈 Drive stats → NFT metadata or DAO proposal input
 ```
 
+## 📦 Supabase (Postgress) Example.
+
+```
+create table trips (
+  id uuid primary key default uuid_generate_v4(),
+  wallet text,
+  distance_km float,
+  duration_minutes int,
+  co2_saved_kg float,
+  metadata jsonb,
+  created_at timestamp default now()
+);
+
+create table payments (
+  id uuid primary key default uuid_generate_v4(),
+  wallet text,
+  amount float,
+  tx_signature text,
+  created_at timestamp default now()
+);
+```
 ---
 
 ## ⚙️ Environment Variables
