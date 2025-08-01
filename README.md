@@ -1,6 +1,6 @@
 # 🚗 Tesla IoT Dashboard + BARK Protocol
 
-A real-time Tesla dashboard with Solana blockchain integration — combining $AI6 and $BARK token utilities, NFT skin rewards, wallet tracking, staking, APRS/WX packet transmission, SMS alerts, supply chain validation with Pyth, and payments with Solana Pay.
+A real-time Tesla dashboard with Solana blockchain integration — combining \$AI6 and \$BARK token utilities, NFT skin rewards, wallet tracking, staking, APRS/WX packet transmission, SMS alerts, supply chain validation with Pyth, and payments with Solana Pay.
 
 ![Architecture Diagram](./docs/architecture-diagram.png)
 
@@ -9,38 +9,44 @@ A real-time Tesla dashboard with Solana blockchain integration — combining $AI
 ## 🚀 Key Features
 
 ### 🚘 Tesla Vehicle Dashboard
-- Real-time vehicle state: driving, charging, parked
-- GPS trail rendering and interactive trip replay
-- Tire pressure, battery %, media playback, climate info
-- Cached vehicle state + offline fallback
-- API logs and dynamic polling intervals
+
+* Real-time vehicle state: driving, charging, parked
+* GPS trail rendering and interactive trip replay
+* Tire pressure, battery %, media playback, climate info
+* Cached vehicle state + offline fallback
+* API logs and dynamic polling intervals
 
 ### 🔐 Solana Blockchain Integration
-- $BARK SPL Token tracking (BTC, SOL, USDC included)
-- Solana wallet connect (Phantom, Backpack, Solflare)
-- XP system + Anchor staking contract
-- NFT minting via **Metaplex**
-- NFT skin selection + Leaderboard
-- On-chain triggers using **Solana Actions** and **Dialect Blinks**
-- **Solana Pay** QR payment support for NFT skins and dashboard features
+
+* \$BARK SPL Token tracking (BTC, SOL, USDC included)
+* Solana wallet connect (Phantom, Backpack, Solflare)
+* XP system + Anchor staking contract
+* NFT minting via **Metaplex**
+* NFT skin selection + Leaderboard
+* On-chain triggers using **Solana Actions** and **Dialect Blinks**
+* **Solana Pay** QR payment support for NFT skins and dashboard features
 
 ### 🛰 APRS-IS Support
-- Configurable call sign, WX mode, passcode
-- EU APRS-IS packet transmission (position + temperature)
-- 30s while driving, 10min idle minimum update interval
+
+* Configurable call sign, WX mode, passcode
+* EU APRS-IS packet transmission (position + temperature)
+* 30s while driving, 10min idle minimum update interval
 
 ### 📲 Infobip SMS Notifications
-- Real-time driver alerts (optional)
-- Restrict to “Driving only” or “Always”
-- Message sender ID and API key configurable
-- All SMS stored to `data/sms.log`
+
+* Real-time driver alerts (optional)
+* Restrict to “Driving only” or “Always”
+* Message sender ID and API key configurable
+* All SMS stored to `data/sms.log`
 
 ### 📦 Pyth Oracle Integration
-- Real-time Solana-based oracle pricing for:
-  - $AI6 / $BARK / SOL / USDC tokens
-  - Vehicle-linked supply chain assets (energy, battery usage)
-- Cross-check pricing with on-chain Pyth feeds
-- Plug-in ready for AI-driven logistics forecasting
+
+* Real-time Solana-based oracle pricing for:
+
+  * \$AI6 / \$BARK / SOL / USDC tokens
+  * Vehicle-linked supply chain assets (energy, battery usage)
+* Cross-check pricing with on-chain Pyth feeds
+* Plug-in ready for AI-driven logistics forecasting
 
 ---
 
@@ -48,101 +54,104 @@ A real-time Tesla dashboard with Solana blockchain integration — combining $AI
 
 ### 🧩 Frontend: Next.js + Tailwind + TypeScript
 
-| Route      | Description                                        |
-|------------|----------------------------------------------------|
-| `/`        | Tesla dashboard: vehicle state, XP, portfolio      |
-| `/config`  | APRS, polling, SMS setup, caching                  |
-| `/sms`     | SMS message logs                                   |
-| `/history` | CSV trip logs + interactive replay map             |
-| `/vehicle` | Full raw vehicle snapshot                          |
+| Route      | Description                                   |
+| ---------- | --------------------------------------------- |
+| `/`        | Tesla dashboard: vehicle state, XP, portfolio |
+| `/config`  | APRS, polling, SMS setup, caching             |
+| `/sms`     | SMS message logs                              |
+| `/history` | CSV trip logs + interactive replay map        |
+| `/vehicle` | Full raw vehicle snapshot                     |
 
 Components include:
-- `WalletConnect`
-- `VehicleStatusCard`
-- `TripMap`
-- `TokenPortfolio`
-- `MediaPlayer`
-- `Leaderboard`
-- `NFTSkinSelector`
+
+* `WalletConnect`
+* `VehicleStatusCard`
+* `TripMap`
+* `TokenPortfolio`
+* `MediaPlayer`
+* `Leaderboard`
+* `NFTSkinSelector`
 
 ### ⚙️ Backend: Node.js (Express) + SSE + Solana SDKs
 
-| Endpoint             | Description                                      |
-|----------------------|--------------------------------------------------|
-| `/api/state`         | Current vehicle state (live or cached)           |
-| `/api/occupant`      | Wake vehicle on occupant detection               |
-| `/api/config`        | Save/load APRS, SMS, polling, settings           |
-| `/stream/:vehicle_id`| Live SSE stream of vehicle data                  |
-| `/apiliste`          | List of latest Tesla API variables/values        |
+| Endpoint              | Description                               |
+| --------------------- | ----------------------------------------- |
+| `/api/state`          | Current vehicle state (live or cached)    |
+| `/api/occupant`       | Wake vehicle on occupant detection        |
+| `/api/config`         | Save/load APRS, SMS, polling, settings    |
+| `/stream/:vehicle_id` | Live SSE stream of vehicle data           |
+| `/apiliste`           | List of latest Tesla API variables/values |
 
 Services:
-- Tesla Poller: dynamic intervals, offline caching
-- Infobip SMS Service
-- APRS Packet Sender
-- CSV Trip Logger
-- Token Metadata Fetcher
-- Pyth Oracle Reader
-- NFT + Solana Actions + Metaplex Handler
-- Anchor staking pool client
+
+* Tesla Poller: dynamic intervals, offline caching
+* Infobip SMS Service
+* APRS Packet Sender
+* CSV Trip Logger
+* Token Metadata Fetcher
+* Pyth Oracle Reader
+* NFT + Solana Actions + Metaplex Handler
+* Anchor staking pool client
 
 ---
 
 ## 🔗 Solana Integration Stack
 
-| Component        | Role                                                                 |
-|------------------|----------------------------------------------------------------------|
-| `@solana/web3.js` | Blockchain interaction (transactions, token balances)               |
-| `@project-serum/anchor` | XP staking via Anchor contracts                               |
-| `@metaplex-foundation/js` | NFT minting and metadata via Metaplex                       |
-| `@solana/spl-token` | SPL Token management for $BARK, etc.                              |
-| `@solana/pay` | Solana Pay QR code generator and validator                              |
-| `@pythnetwork/client` | Real-time oracle feeds for supply chain validation (SOL, BTC, USDC)   |
-| `@dialectlabs/sdk` | On-chain event + alert triggers via Blinks                         |
+| Component                 | Role                                                  |
+| ------------------------- | ----------------------------------------------------- |
+| `@solana/web3.js`         | Blockchain interaction (transactions, token balances) |
+| `@project-serum/anchor`   | XP staking via Anchor contracts                       |
+| `@metaplex-foundation/js` | NFT minting and metadata via Metaplex                 |
+| `@solana/spl-token`       | SPL Token management for \$BARK, etc.                 |
+| `@solana/pay`             | Solana Pay QR code generator and validator            |
+| `@pythnetwork/client`     | Real-time oracle feeds for supply chain validation    |
+| `@dialectlabs/sdk`        | On-chain event + alert triggers via Blinks            |
 
 ---
 
-## 📦 Project Structure
+## 📦 Project Structure (Monorepo)
 
 ```
-
-/backend
-├── routes/
-├── services/
-│   ├── teslaPoller.ts
-│   ├── infobip.ts
-│   ├── aprs.ts
-│   ├── solana/
-│   │   ├── wallet.ts
-│   │   ├── metaplex.ts
-│   │   ├── pyth.ts
-│   │   ├── actions.ts
-├── data/
-│   ├── \<vehicle\_id>/cache.json
-│   ├── trips/
-└── static/
-
-/frontend
-├── components/
-├── pages/
-├── lib/
-├── public/
-
+/apps
+├── frontend
+│   ├── components/
+│   ├── pages/
+│   ├── lib/
+│   └── public/
+├── backend
+│   ├── routes/
+│   ├── services/
+│   │   ├── teslaPoller.ts
+│   │   ├── infobip.ts
+│   │   ├── aprs.ts
+│   │   └── solana/
+│   │       ├── wallet.ts
+│   │       ├── metaplex.ts
+│   │       ├── pyth.ts
+│   │       └── actions.ts
+│   └── data/
+│       ├── <vehicle_id>/cache.json
+│       └── trips/
+/packages
+├── ui
+├── utils
+└── sdk
 /docs
 └── architecture-diagram.png
-
-````
+```
 
 ---
 
 ## ⚙️ Environment Variables
 
 ### `.env` (Frontend)
+
 ```env
 NEXT_PUBLIC_SOLANA_NETWORK=devnet
 NEXT_PUBLIC_RPC_URL=https://api.devnet.solana.com
 NEXT_PUBLIC_MINT_API_URL=https://api.actions.barkprotocol.net/mint
 NEXT_PUBLIC_WALLET_ADDRESS=YOUR_WALLET
-````
+```
 
 ### `.env` (Backend)
 
@@ -163,14 +172,14 @@ PYTH_PROGRAM_ID=your-pyth-program
 ### Backend (Port 8013)
 
 ```bash
-cd backend
+cd apps/backend
 npm run dev
 ```
 
 ### Frontend (Port 3000)
 
 ```bash
-cd frontend
+cd apps/frontend
 npm run dev
 ```
 
