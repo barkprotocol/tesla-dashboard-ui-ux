@@ -282,6 +282,3 @@ Detailed markdown guides live in `/docs`:
 ---
 
 Thank you for exploring the Tesla IoT + BARK Protocol project!
-
-```
-
