@@ -42,8 +42,10 @@ A real-time Tesla dashboard with Solana blockchain integration — combining $AI
 ### 📦 Pyth Oracle Integration
 
 - Real-time Solana-based oracle pricing for:
+
   - $AI6 / $BARK / SOL / USDC tokens
   - Vehicle-linked supply chain assets (energy, battery usage)
+  
 - Cross-check pricing with on-chain Pyth feeds
 - Plug-in ready for AI-driven logistics forecasting
 
@@ -61,7 +63,7 @@ A real-time Tesla dashboard with Solana blockchain integration — combining $AI
 | `/history` | CSV trip logs + interactive replay map        |
 | `/vehicle` | Full raw vehicle snapshot                     |
 
-Core components include:
+Components include:
 
 - `WalletConnect`
 - `VehicleStatusCard`
@@ -81,7 +83,7 @@ Core components include:
 | `/stream/:vehicle_id` | Live SSE stream of vehicle data           |
 | `/apiliste`           | List of latest Tesla API variables/values |
 
-Backend services:
+Services:
 
 - Tesla Poller: dynamic intervals, offline caching
 - Infobip SMS Service
@@ -108,177 +110,176 @@ Backend services:
 
 ---
 
-## 🗄️ Monorepo & Supabase Setup
-
-This project follows a **monorepo** architecture for better modularity and shared dependencies, separating frontend, backend, and shared libraries into dedicated packages:
+## 📦 Project Structure (Monorepo)
 
 ```
 
 /apps
-/frontend       # Next.js Tesla Dashboard UI
-/backend        # Node.js Express API & Services
-/libs
-/common         # Shared utilities, types, and constants
-/solana         # Solana blockchain helpers & hooks
-/ui             # Reusable UI components & styles
+├── frontend
+│   ├── components/
+│   ├── hooks/                  ← 🧠 Custom React hooks (useVehicleState, useWalletBalance, etc.)
+│   ├── types/                  ← 📚 TypeScript shared types (Vehicle, Trip, NFTMetadata, etc.)
+│   ├── lib/
+│   │   ├── supabase.ts         ← 📦 Supabase client for trip/session logs
+│   │   └── solana.ts           ← 🔗 Solana connection, wallet utils
+│   ├── api/                    ← 🔌 Optional API routes for frontend
+│   └── migrations/            ← 📜 DB schema changes, if using Supabase CLI
+├── backend
+│   ├── routes/
+│   │   ├── trip.ts             ← 🚗 POST/GET trip log data
+│   │   └── mint.ts             ← 🪙 Trigger NFT mint from trip stats
+│   ├── lib/
+│   │   ├── supabase.ts         ← 🔐 Supabase server SDK
+│   │   └── types.ts            ← 🔄 Shared backend types
+│   ├── services/
+│   ├── db/
+│   │   └── schema.sql          ← 🧩 Supabase SQL migrations
+│   └── cron/
+│       └── pythPoller.ts       ← ⏰ Poll Pyth oracle prices periodically
+/packages
+├── sdk
+│   ├── nft/
+│   ├── staking/
+│   └── actions/
+└── utils
+├── energy.ts              ← ⚡ Normalize Tesla energy usage to on-chain logic
+├── token.ts               ← 💰 Format SPL token balances
+└── analytics.ts           ← 📈 Drive stats → NFT metadata or DAO proposal input
 
 ````
-
-### Why Monorepo?
-
-- Simplifies dependency management
-- Encourages code reuse between frontend & backend
-- Easier versioning and testing workflows
-- Streamlined CI/CD pipeline
-
-We use **Yarn Workspaces** or **npm Workspaces** to manage this structure.
 
 ---
 
-### Supabase Integration
+## 📦 Supabase (Postgres) Example
 
-The project uses **Supabase** as a backend-as-a-service for:
+```sql
+create table trips (
+  id uuid primary key default uuid_generate_v4(),
+  wallet text not null,
+  distance_km float,
+  duration_minutes int,
+  co2_saved_kg float,
+  metadata jsonb,
+  created_at timestamp default now()
+);
 
-- User authentication and sessions
-- Real-time syncing of vehicle & token data
-- Persistent storage for app configurations
-- SMS logs and notifications tracking
-
-#### Setup Supabase
-
-1. Create a new project on [Supabase.io](https://supabase.io)
-2. Get your **Project URL** and **Anon Key** from the Supabase dashboard
-3. Add the following to your `.env.local` (frontend & backend):
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key  # Backend only, keep secret
+create table payments (
+  id uuid primary key default uuid_generate_v4(),
+  wallet text not null,
+  amount float,
+  tx_signature text,
+  created_at timestamp default now()
+);
 ````
-
-4. Initialize Supabase clients in your apps:
-
-* **Frontend:**
-
-```ts
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
-export default supabase
-```
-
-* **Backend:**
-
-```ts
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
-export default supabaseAdmin
-```
 
 ---
 
 ## ⚙️ Environment Variables
 
-### `.env.local` (Frontend & Backend)
+### `.env` (Frontend)
 
 ```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key  # Backend only
-
-# Solana
 NEXT_PUBLIC_SOLANA_NETWORK=devnet
 NEXT_PUBLIC_RPC_URL=https://api.devnet.solana.com
 NEXT_PUBLIC_MINT_API_URL=https://api.actions.barkprotocol.net/mint
-NEXT_PUBLIC_WALLET_ADDRESS=YOUR_WALLET_ADDRESS
+NEXT_PUBLIC_WALLET_ADDRESS=YOUR_WALLET
+```
 
-# Tesla API
-TESLA_API_KEY=your-tesla-api-key
+### `.env` (Backend)
 
-# Infobip SMS
+```env
+PORT=8013
+TESLA_API_KEY=mock-or-real-key
+SOLANA_NETWORK=devnet
+TOKEN_PROGRAM_ID=Tokenkeg...
+NFT_PROGRAM_ID=gEb7n...
 INFOBIP_API_KEY=your-infobip-key
-
-# Pyth Oracle
 PYTH_PROGRAM_ID=your-pyth-program
 ```
 
 ---
 
+## 🔗 Backend Integrations
+
+### API Endpoints
+
+| Method | Endpoint      | Description                                                 |
+| ------ | ------------- | ----------------------------------------------------------- |
+| GET    | `/api/trips`  | Fetch user driving history                                  |
+| POST   | `/api/mint`   | Mint NFTs with drive-linked metadata                        |
+| GET    | `/api/prices` | Read real-time \$BARK / \$AI6 / SOL prices from Pyth oracle |
+
+---
+
+### React Hooks
+
+* `useTripHistory()` — Fetch and manage user trip logs.
+* `useMintNFT()` — Mint NFTs with metadata based on driving stats.
+* `usePythPrices()` — Subscribe to real-time token price updates.
+
+---
+
 ## 🧪 Local Development
 
-### Install dependencies and run
+> **Prerequisites:** Node.js >=16, npm/yarn, Supabase CLI (optional)
+
+### Backend
 
 ```bash
-# Install all dependencies across the monorepo
-yarn install
-
-# Start backend server (default port 8013)
-yarn workspace backend dev
-
-# Start frontend app (default port 3000)
-yarn workspace frontend dev
+cd apps/backend
+npm install
+npm run dev
 ```
 
-Open your browser to:
+Runs backend API on [http://localhost:8013](http://localhost:8013)
 
-* [http://localhost:3000](http://localhost:3000) → React Tesla Dashboard
-* [http://localhost:8013/config](http://localhost:8013/config) → Backend config UI
-
----
-
-## 🎨 Theming & Styling
-
-* Brand colors: whites, blacks, light grays, icons in `#d4c89d`
-* Fonts: Inter and Geist, with BARK logo using Inter SemiBold uppercase
-* Tailwind CSS with dark/light mode toggling
-* Theme provider with React Context to switch between modes
-
----
-
-## 🧪 Storybook Component Preview
-
-To develop UI components in isolation, run:
+### Frontend
 
 ```bash
 cd apps/frontend
-npm run storybook
+npm install
+npm run dev
 ```
 
-Storybook showcases the reusable UI components with the brand style applied.
+Runs frontend app on [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 🧑‍💻 Development Setup Prompt
+
+Run this command in your terminal to set up everything quickly:
+
+```bash
+# Clone repo, install deps and start all services concurrently
+git clone https://github.com/your-org/tesla-bark.git
+cd tesla-bark
+
+# Install all packages in monorepo
+npm install
+
+# Start frontend and backend concurrently (using `concurrently` or `turbo`)
+npm run dev
+```
+
+You can customize your `.env` files as needed:
+
+* `.env.local` for frontend config
+* `.env` for backend config
 
 ---
 
 ## 📜 License
 
-MIT License – See `LICENSE.md`
+MIT License — see [LICENSE.md](LICENSE.md)
 
 ---
 
 ## 🤝 Contributing
 
-PRs and feedback welcome! This project bridges the physical and decentralized world — contributions from Web3, IoT, and Tesla communities encouraged.
+Contributions welcome! PRs, issues, and feedback help improve this bridge between Tesla IoT, Solana blockchain, and real-world sustainability.
 
 ---
 
-## 📚 Docs
+## 📫 Contact
 
-Detailed markdown guides live in `/docs`:
-
-* [01-theming.md](./docs/01-theming.md) — Theming and styling setup
-* [02-storybook.md](./docs/02-storybook.md) — Storybook UI component previews
-* [03-deployment.md](./docs/03-deployment.md) — Deployment instructions
-* [04-component-examples.md](./docs/04-component-examples.md) — Brand-styled component templates
-
----
-
-Thank you for exploring the Tesla IoT + BARK Protocol project!
+BARK Protocol Team — [contact@barkprotocol.net](mailto:contact@barkprotocol.net)
