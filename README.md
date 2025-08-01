@@ -115,29 +115,34 @@ Services:
 /apps
 ├── frontend
 │   ├── components/
-│   ├── pages/
+│   ├── hooks/                  ← 🧠 Custom React hooks (useVehicleState, useWalletBalance, etc.)
+│   ├── types/                  ← 📚 TypeScript shared types (Vehicle, Trip, NFTMetadata, etc.)
 │   ├── lib/
-│   └── public/
+│   │   ├── supabase.ts         ← 📦 Supabase client for trip/session logs
+│   │   └── solana.ts           ← 🔗 Solana connection, wallet utils
+│   ├── api/                    ← 🔌 Optional API routes for frontend
+│   └── migrations/            ← 📜 DB schema changes, if using Supabase CLI
 ├── backend
 │   ├── routes/
+│   │   ├── trip.ts             ← 🚗 POST/GET trip log data
+│   │   └── mint.ts             ← 🪙 Trigger NFT mint from trip stats
+│   ├── lib/
+│   │   ├── supabase.ts         ← 🔐 Supabase server SDK
+│   │   └── types.ts            ← 🔄 Shared backend types
 │   ├── services/
-│   │   ├── teslaPoller.ts
-│   │   ├── infobip.ts
-│   │   ├── aprs.ts
-│   │   └── solana/
-│   │       ├── wallet.ts
-│   │       ├── metaplex.ts
-│   │       ├── pyth.ts
-│   │       └── actions.ts
-│   └── data/
-│       ├── <vehicle_id>/cache.json
-│       └── trips/
+│   ├── db/
+│   │   └── schema.sql          ← 🧩 Supabase SQL migrations
+│   └── cron/
+│       └── pythPoller.ts       ← ⏰ Poll Pyth oracle prices periodically
 /packages
-├── ui
-├── utils
-└── sdk
-/docs
-└── architecture-diagram.png
+├── sdk
+│   ├── nft/
+│   ├── staking/
+│   └── actions/
+└── utils
+    ├── energy.ts              ← ⚡ Normalize Tesla energy usage to on-chain logic
+    ├── token.ts               ← 💰 Format SPL token balances
+    └── analytics.ts           ← 📈 Drive stats → NFT metadata or DAO proposal input
 ```
 
 ---
